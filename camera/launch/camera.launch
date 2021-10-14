@@ -1,0 +1,20 @@
+<launch>
+    <node
+        pkg="camera"
+        type="webcam_pub.py"
+        name="webcam_pub"
+        output="screen"
+    />
+    <node
+        pkg="camera"
+        type="webcam_process.py"
+        name="webcam_processor"
+        output="screen"
+    />
+    <node
+        pkg="camera"
+        type="webcam_view.py"
+        name="webcam_view"
+        output="screen"
+    />
+</launch>

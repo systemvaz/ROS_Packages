@@ -12,4 +12,4 @@ My 'Robotics Operating System' Packages
   * /models/: Tensorflow Lite model and classes txt file.
 
 
-![picture_alt](https://github.com/systemvaz/ROS_Packages/blob/master/camera/src/ros_img_detect.JPG)
+<img src="https://github.com/systemvaz/ROS_Packages/blob/master/camera/src/ros_img_detect.JPG" width=50% height=50%>

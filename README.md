@@ -10,5 +10,7 @@ My 'Robotics Operating System' Packages
  * Additional:
   * /src/receiver.py: Run this on machine with IP defined in ImageSend method in webcam_view.py to view final webcam stream.
   * /models/: Tensorflow Lite model and classes txt file.
+ * rqt_graph output:
  <img src="https://github.com/systemvaz/ROS_Packages/blob/master/camera/src/rosgraph.png">
+ * receiver.py output:
  <img src="https://github.com/systemvaz/ROS_Packages/blob/master/camera/src/ros_img_detect.JPG" width=50% height=50%>

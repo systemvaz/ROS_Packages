@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import time
 import rospy
 import rospkg
 import cv2 as cv
@@ -12,13 +13,13 @@ from tflite_runtime.interpreter import Interpreter
 
 rospack = rospkg.RosPack()
 package_dir = rospack.get_path('camera')
-publisher = rospy.Publisher('video_frames_processed', Image, queue_size=24)
+publisher = rospy.Publisher('video_frames_processed', Image, queue_size=10)
 
 # Tensorflow Lite model declarations
 model_path_tf = os.path.join(package_dir, "models/lite-model_ssd_mobilenet_v1_1_metadata_2.tflite")
 label_path_tf = os.path.join(package_dir, "models/labelmap.txt")
 
-interpreter = Interpreter(model_path=model_path_tf)
+interpreter = Interpreter(model_path=model_path_tf, num_threads=4)
 interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
@@ -56,19 +57,23 @@ def process_tflite(frame):
             xmax = int(min(videoWidth, (boxes[i][3] * videoWidth)))
 
             (txtW, txtH), _ = cv.getTextSize(labels[int(classes[i])], cv.FONT_HERSHEY_SIMPLEX, 0.8, 1)
-            cv.rectangle(frame, (xmin, ymin - 30), (xmin + txtW + 5, ymin), bounding_box_colours[int(classes[i])], -1)
+            cv.rectangle(frame, (xmin, ymin - 30), (xmin + txtW + 10, ymin), bounding_box_colours[int(classes[i])], -1)
             cv.rectangle(frame, (xmin, ymin), (xmax, ymax), bounding_box_colours[int(classes[i])], 2)
-            cv.putText(frame, labels[int(classes[i])], (xmin + 2, ymin - 5), cv.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2)
+            cv.putText(frame, labels[int(classes[i])], (xmin + 5, ymin - 5), cv.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2)
 
     return frame
 
 
 def callback(data):
+    start_time = time.time()
     bridge = CvBridge()
-    rospy.loginfo('processing webcam frame')
     current_frame = bridge.imgmsg_to_cv2(data)
     frame = process_tflite(current_frame)
     publisher.publish(bridge.cv2_to_imgmsg(frame))
+    end_time = time.time()
+    total_time = end_time - start_time
+    fps = 1 / total_time
+    rospy.loginfo('processed webcam frame. FPS: %.2f' % fps)
 
 
 def receive_message():
